@@ -61,6 +61,14 @@
   PU2CLR Si47XX API documentation: https://pu2clr.github.io/SI4735/extras/apidoc/html/
 
   By Ricardo Lima Caratti, April  2021.
+
+  _____________________
+
+  1. The usual visual changes
+  2. Band name
+  3. Battery monitor
+
+  Changes by Darren VE3XLT
 */
 
 // #define SSD1306    0x3D  // The OLED bus address for this KIt is 0x3D
@@ -1215,7 +1223,7 @@ void loop()
     }
   }
 
-  // Update battery status every 60 seconds
+  // Update battery status every 5 minutes
   if ( (millis() - elapsedBatt ) > 300000)
   {
      showBatt();
