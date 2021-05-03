@@ -71,6 +71,12 @@
   PU2CLR Si47XX API documentation: https://pu2clr.github.io/SI4735/extras/apidoc/html/
 
   By Ricardo Lima Caratti, April  2021.
+  _______________________
+
+  1. Made various visual changes
+  2. Added battery monitor
+
+  Darren VE3XLT, 3 May 2021
 */
 
 #include <SI4735.h>
