@@ -71,6 +71,14 @@
   PU2CLR Si47XX API documentation: https://pu2clr.github.io/SI4735/extras/apidoc/html/
 
   By Ricardo Lima Caratti, April  2021.
+
+  ------------------------
+
+  - The usual visual changes
+  - Battery monitor (with voltage divider on A2)
+  - Band modifications
+
+  Darren VE3XLT, 8 April, 2021
 */
 
 #include <SI4735.h>
@@ -172,12 +180,12 @@ typedef struct
 
 int8_t bwIdxSSB = 4;
 Bandwitdth bandwitdthSSB[] = {
-    {4, "0.5"}, // 0
-    {5, "1.0"}, // 1
-    {0, "1.2"}, // 2
-    {1, "2.2"}, // 3
-    {2, "3.0"}, // 4  - default
-    {3, "4.0"}  // 5
+    {4, "0.5k"}, // 0
+    {5, "1.0k"}, // 1
+    {0, "1.2k"}, // 2
+    {1, "2.2k"}, // 3
+    {2, "3.0k"}, // 4  - default
+    {3, "4.0k"}  // 5
 };              // 3 = 4kHz
 
 int8_t bwIdxAM = 5;
@@ -244,23 +252,23 @@ Band band[] = {
     {MW_BAND_TYPE, 520, 1720, 810, 3, 4, "MW"},
 //    {MW_BAND_TYPE, 531, 1701, 783, 2, 4},   // MW for Europe, Africa and Asia
     {SW_BAND_TYPE, 1700, 2000, 1900, 0, 4, "160M"}, // 160 meters
-    {SW_BAND_TYPE, 2000, 2500, 1200, 0, 4, "S120M"}, // 120 meters SW
-    {SW_BAND_TYPE, 2500, 3500, 3330, 0, 4, "S90M"}, // 90 meters SW
+    {SW_BAND_TYPE, 2000, 2500, 2200, 0, 4, "SW120"}, // 120 meters SW
+    {SW_BAND_TYPE, 2500, 3500, 3330, 0, 4, "SW90"}, // 90 meters SW
     {SW_BAND_TYPE, 3500, 4000, 3700, 0, 5, "80M"}, // 80 meters
-    {SW_BAND_TYPE, 4000, 5100, 4850, 1, 4, "S60M"},
+    {SW_BAND_TYPE, 4000, 5100, 4850, 1, 4, "SW60"},
     {SW_BAND_TYPE, 5100, 6800, 6000, 1, 4, "HFair"},
     {SW_BAND_TYPE, 6800, 7300, 7100, 0, 4, "40M"}, // 40 meters
-    {SW_BAND_TYPE, 7200, 7900, 7200, 1, 4, "S41M"}, // 41 meters    
-    {SW_BAND_TYPE, 9200, 10000, 9600, 1, 4, "S31M"},
+    {SW_BAND_TYPE, 7200, 7900, 7200, 1, 4, "SW41"}, // 41 meters    
+    {SW_BAND_TYPE, 9200, 10000, 9600, 1, 4, "SW31"},
     {SW_BAND_TYPE, 10000, 11000, 10100, 0, 4, "30M"}, // 30 meters
-    {SW_BAND_TYPE, 11200, 12500, 11940, 1, 4, "S25M"},
-    {SW_BAND_TYPE, 13400, 13900, 13600, 1, 4, "S22M"},
+    {SW_BAND_TYPE, 11200, 12500, 11940, 1, 4, "SW25"},
+    {SW_BAND_TYPE, 13400, 13900, 13600, 1, 4, "SW22"},
     {SW_BAND_TYPE, 14000, 14500, 14200, 0, 4, "20M"}, // 20 meters
-    {SW_BAND_TYPE, 15000, 15900, 15300, 1, 4, "S15M"},
-    {SW_BAND_TYPE, 17200, 17900, 17600, 1, 4, "S16M"},
+    {SW_BAND_TYPE, 15000, 15900, 15300, 1, 4, "SW15"},
+    {SW_BAND_TYPE, 17200, 17900, 17600, 1, 4, "SW16"},
     {SW_BAND_TYPE, 18000, 18300, 18100, 0, 4, "17M"}, // 17 meters
     {SW_BAND_TYPE, 21000, 21400, 21200, 0, 4, "15M"}, // 15 mters
-    {SW_BAND_TYPE, 21400, 21900, 21500, 1, 4, "S13M"}, // 13 mters
+    {SW_BAND_TYPE, 21400, 21900, 21500, 1, 4, "SW13"}, // 13 mters
     {SW_BAND_TYPE, 24890, 26200, 24940, 0, 4, "12M"}, // 12 meters
     {SW_BAND_TYPE, 26200, 27900, 27500, 0, 4, "CB"}, // CB band (11 meters) 
     {SW_BAND_TYPE, 28000, 30000, 28400, 0, 4, "10M"}  // 10 meters
@@ -512,14 +520,14 @@ void showFrequency()
       convertToChar(currentFrequency, freqDisplay, 5, 2);
   }
 
-  oled.invertOutput(bfoOn);
+  //oled.invertOutput(bfoOn);
   oled.setFont(FONT8X16ATARI);
   oled.setCursor(0, 0);
   oled.print("      ");
   oled.setCursor(0, 0);
   oled.print(freqDisplay);
   oled.setFont(FONT6X8);
-  oled.invertOutput(false);
+  //oled.invertOutput(false);
 
   oled.setCursor(50, 1);
   oled.print(unit);
@@ -583,7 +591,7 @@ void showBandDesc()
 */
 void showRSSI()
 {
-  int bars = (rssi / 10.0); // + 1;
+  int bars = (rssi / 9.0); // + 1;
   oled.setCursor(80, 1);
   oled.print("        ");
   oled.setCursor(74, 1);
@@ -734,9 +742,12 @@ void showAttenuation()
 void showBFO()
 {
   oled.setCursor(0, 2);
-  oled.print("         ");
+  oled.print("           ");
   oled.setCursor(0, 2);
-  oled.print("BFO: ");
+  oled.invertOutput(bfoOn);
+  oled.print("BFO:");
+  oled.invertOutput(false);
+  oled.print(" ");
   oled.print(currentBFO);
   oled.print("Hz ");
 
