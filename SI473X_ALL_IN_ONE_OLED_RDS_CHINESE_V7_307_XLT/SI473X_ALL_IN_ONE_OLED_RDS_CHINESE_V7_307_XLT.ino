@@ -579,7 +579,7 @@ void showBandDesc()
     bandMode = (char *)bandModeDesc[currentMode];
 
   oled.setCursor(50, 0);
-  oled.print("   ");
+  oled.print("  ");
   oled.setCursor(50, 0);
 //  oled.invertOutput(cmdBand);
   oled.print(bandMode);
