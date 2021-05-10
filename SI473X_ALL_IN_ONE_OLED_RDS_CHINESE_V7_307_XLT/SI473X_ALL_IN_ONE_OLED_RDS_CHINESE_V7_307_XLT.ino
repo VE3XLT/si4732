@@ -136,7 +136,7 @@ const uint8_t app_id = 43; // Useful to check the EEPROM content before processi
 const int eeprom_address = 0;
 long storeTime = millis();
 
-const char *bandModeDesc[] = {"FM ", "LSB", "USB", "AM "};
+const char *bandModeDesc[] = {"FM", "LSB", "USB", "AM "};
 uint8_t currentMode = FM;
 uint8_t seekDirection = 1;
 
@@ -752,7 +752,7 @@ void showBFO()
   oled.print("Hz ");
 
   oled.setCursor(80, 2);
-  oled.print("         ");
+  oled.print("        ");
   oled.setCursor(80, 2);
   oled.invertOutput(cmdStep);
   oled.print("STEP:");
