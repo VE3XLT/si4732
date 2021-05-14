@@ -592,19 +592,24 @@ void showBandDesc()
 */
 void showRSSI()
 {
-  int bars = (rssi / 9.0); // + 1;
+  int bars = (rssi / 5.0); // + 1;
   oled.setCursor(80, 1);
   oled.print(" . . . .");
   oled.setCursor(74, 1);
   oled.print("S");
-  for (int i = 0; i < bars; i++)
-    oled.print('=');
-  oled.print('|');
   if ( bars > 7 )
   {
-    oled.setCursor(116, 1);
-    oled.print("++");
+    oled.setCursor(80, 1);
+    oled.print("======++");
   }
+  else
+  {
+    for (int i = 0; i < bars; i++)
+    
+    oled.print('=');
+    oled.print('|');
+  }
+  
 
   if (currentMode == FM)
   {
