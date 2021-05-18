@@ -592,7 +592,7 @@ void showBandDesc()
 */
 void showRSSI()
 {
-  int bars = (rssi / 9.0); // + 1;
+  int bars = (rssi / 10.0); // + 1;
   oled.setCursor(80, 1);
   oled.print(" . . . .");
   oled.setCursor(74, 1);
