@@ -249,27 +249,27 @@ Band band[] = {
 //    {FM_BAND_TYPE, 6400, 8400, 7000, 3, 0}, // FM from 64 to 84 MHz
     {FM_BAND_TYPE, 8400, 10800, 10570, 3, 0, "VHF"},
 //    {LW_BAND_TYPE, 100, 510, 300, 0, 4, "LW"},
-    {MW_BAND_TYPE, 520, 1720, 810, 3, 4, "MW"},
+    {MW_BAND_TYPE, 520, 1720, 810, 3, 5, "MW"},
 //    {MW_BAND_TYPE, 531, 1701, 783, 2, 4},   // MW for Europe, Africa and Asia
     {SW_BAND_TYPE, 1700, 2000, 1900, 0, 4, "160M"}, // 160 meters
-    {SW_BAND_TYPE, 2000, 2500, 2200, 1, 4, "SW120"}, // 120 meters SW
-    {SW_BAND_TYPE, 2500, 3500, 3330, 1, 4, "SW90"}, // 90 meters SW
+    {SW_BAND_TYPE, 2000, 2500, 2200, 1, 5, "SW120"}, // 120 meters SW
+    {SW_BAND_TYPE, 2500, 3500, 3330, 1, 5, "SW90"}, // 90 meters SW
     {SW_BAND_TYPE, 3500, 4000, 3700, 0, 5, "80M"}, // 80 meters
-    {SW_BAND_TYPE, 4000, 5100, 4850, 1, 4, "SW60"}, //60 meter SW
-    {SW_BAND_TYPE, 5800, 6300, 5850, 1, 4, "SW49"}, //49 meter SW
+    {SW_BAND_TYPE, 4000, 5100, 4850, 1, 5, "SW60"}, //60 meter SW
+    {SW_BAND_TYPE, 5800, 6300, 5850, 1, 5, "SW49"}, //49 meter SW
     {SW_BAND_TYPE, 5400, 6800, 6000, 0, 4, "HFair"}, // HF air band
     {SW_BAND_TYPE, 6800, 7300, 7100, 0, 4, "40M"}, // 40 meters
-    {SW_BAND_TYPE, 7200, 7900, 7200, 1, 4, "SW41"}, // 41 meters    
-    {SW_BAND_TYPE, 9200, 10000, 9600, 1, 4, "SW31"}, //31 meter SW
+    {SW_BAND_TYPE, 7200, 7900, 7200, 1, 5, "SW41"}, // 41 meters    
+    {SW_BAND_TYPE, 9200, 10000, 9600, 1, 5, "SW31"}, //31 meter SW
     {SW_BAND_TYPE, 10000, 11000, 10100, 0, 4, "30M"}, // 30 meters
-    {SW_BAND_TYPE, 11200, 12500, 11940, 1, 4, "SW25"}, //25 meter SW
-    {SW_BAND_TYPE, 13400, 13900, 13600, 1, 4, "SW22"}, //22 meter SW
+    {SW_BAND_TYPE, 11200, 12500, 11940, 1, 5, "SW25"}, //25 meter SW
+    {SW_BAND_TYPE, 13400, 13900, 13600, 1, 5, "SW22"}, //22 meter SW
     {SW_BAND_TYPE, 14000, 14500, 14200, 0, 4, "20M"}, // 20 meters
-    {SW_BAND_TYPE, 15000, 15900, 15300, 1, 4, "SW19"}, //19 meter SW
-    {SW_BAND_TYPE, 17200, 17900, 17600, 1, 4, "SW16"}, //16 meter SW
+    {SW_BAND_TYPE, 15000, 15900, 15300, 1, 5, "SW19"}, //19 meter SW
+    {SW_BAND_TYPE, 17200, 17900, 17600, 1, 5, "SW16"}, //16 meter SW
     {SW_BAND_TYPE, 18000, 18300, 18100, 0, 4, "17M"}, // 17 meters
     {SW_BAND_TYPE, 21000, 21400, 21200, 0, 4, "15M"}, // 15 meters
-    {SW_BAND_TYPE, 21400, 21900, 21500, 1, 4, "SW13"}, // 13 meters SW
+    {SW_BAND_TYPE, 21400, 21900, 21500, 1, 5, "SW13"}, // 13 meters SW
     {SW_BAND_TYPE, 24890, 26200, 24940, 0, 4, "12M"}, // 12 meters
     {SW_BAND_TYPE, 26200, 27900, 27500, 0, 4, "CB"}, // CB band (11 meters) 
     {SW_BAND_TYPE, 28000, 30000, 28400, 0, 4, "10M"}  // 10 meters
@@ -348,7 +348,7 @@ void setup()
   si4735.getDeviceI2CAddress(RESET_PIN); // Looks for the I2C bus address and set it.  Returns 0 if error
 
   si4735.setup(RESET_PIN, MW_BAND_TYPE); //
-  delay(300);
+  delay(500);
 
   // Checking the EEPROM content
   if (EEPROM.read(eeprom_address) == app_id)
