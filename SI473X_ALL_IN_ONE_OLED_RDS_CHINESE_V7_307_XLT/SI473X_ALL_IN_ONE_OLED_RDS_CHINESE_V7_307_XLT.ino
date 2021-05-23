@@ -308,9 +308,9 @@ void setup()
   oled.setFont(FONT6X8);
 
   // Splash - Change it for your introduction text.
-  oled.setCursor(2, 0);
+  oled.setCursor(0, 0);
   oled.invertOutput(true);
-  oled.print("ATS-20/307 by VE3XLT");
+  oled.print("  ATS-20/307=VE3XLT  ");
   oled.invertOutput(false);
   oled.setCursor(8, 2);
   oled.print("SI473X Arduino Lib");
