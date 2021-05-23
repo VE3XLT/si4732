@@ -308,21 +308,15 @@ void setup()
   oled.setFont(FONT6X8);
 
   // Splash - Change it for your introduction text.
-  oled.setCursor(45, 0);
-  oled.print("SI473X");
-  oled.setCursor(20, 1);
-  oled.print("Arduino Library");
-  oled.setCursor(15, 2);
-//  oled.print("All in One Radio");
+  oled.setCursor(2, 0);
+  oled.invertOutput(true);
+  oled.print("ATS-20/307 by VE3XLT");
+  oled.invertOutput(false);
+  oled.setCursor(8, 2);
+  oled.print("SI473X Arduino Lib");
   oled.setCursor(10, 3);
-  oled.print("V3.0.7a-By PU2CLR");
-  delay(1200);
-  oled.clear();
-  oled.setFont(FONT8X16);
-  oled.setCursor(40, 1);
-  oled.print("VE3XLT");
-//  delay(600);
-  oled.setFont(FONT6X8);
+  oled.print("V3.0.7a by PU2CLR");  
+  delay(1000);
   // end Splash
 
   // If you want to reset the eeprom, keep the VOLUME_UP button pressed during statup
