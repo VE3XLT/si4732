@@ -74,11 +74,19 @@
 
   ------------------------
 
-  - The usual visual changes
-  - Battery monitor (with voltage divider on A2)
+  - The usual VE3XLT visual changes
+  - Battery monitor (with voltage divider on pin A2)
   - Band modifications
 
   Darren VE3XLT, 8 April, 2021
+
+  ------------------------
+
+  - Made changes to S meter that better represent the received signal
+  - Made changes to splash screen to reduce some space
+  - Tweaked default band settings
+
+  Darren VE3XLT, 23 May 2021
 */
 
 #include <SI4735.h>
