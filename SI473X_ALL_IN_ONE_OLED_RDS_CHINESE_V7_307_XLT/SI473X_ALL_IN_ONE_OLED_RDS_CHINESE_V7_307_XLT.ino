@@ -312,18 +312,16 @@ void setup()
   oled.print("SI473X");
   oled.setCursor(20, 1);
   oled.print("Arduino Library");
-  delay(200);
   oled.setCursor(15, 2);
-  oled.print("All in One Radio");
-  delay(200);
+//  oled.print("All in One Radio");
   oled.setCursor(10, 3);
   oled.print("V3.0.7a-By PU2CLR");
-  delay(600);
+  delay(1200);
   oled.clear();
   oled.setFont(FONT8X16);
   oled.setCursor(40, 1);
   oled.print("VE3XLT");
-  delay(500);
+//  delay(600);
   oled.setFont(FONT6X8);
   // end Splash
 
