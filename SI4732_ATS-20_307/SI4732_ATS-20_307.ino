@@ -323,7 +323,7 @@ void setup()
   oled.setCursor(8, 2);
   oled.print("SI473X Arduino Lib");
   oled.setCursor(10, 3);
-  oled.print("V3.0.7a by PU2CLR");  
+  oled.print("V3.0.7b by PU2CLR");  
   delay(1000);
   // end Splash
 
@@ -401,7 +401,7 @@ void saveAllReceiverInformation()
   addr_offset = 6;
   band[bandIdx].currentFreq = currentFrequency;
 
-  for (int i = 0; i < lastBand; i++)
+  for (int i = 0; i <= lastBand; i++)
   {
     EEPROM.update(addr_offset++, (band[i].currentFreq >> 8));   // stores the current Frequency HIGH byte for the band
     EEPROM.update(addr_offset++, (band[i].currentFreq & 0xFF)); // stores the current Frequency LOW byte for the band
@@ -424,7 +424,7 @@ void readAllReceiverInformation()
   currentBFO |= EEPROM.read(eeprom_address + 5);
 
   addr_offset = 6;
-  for (int i = 0; i < lastBand; i++)
+  for (int i = 0; i <= lastBand; i++)
   {
     band[i].currentFreq = EEPROM.read(addr_offset++) << 8;
     band[i].currentFreq |= EEPROM.read(addr_offset++);

@@ -26,3 +26,4 @@ class Rotary
     unsigned char pin2;
 };
 #endif
+
