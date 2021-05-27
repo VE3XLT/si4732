@@ -596,7 +596,7 @@ void showRSSI()
   oled.setCursor(80, 1);
   oled.print(" . . . .");
   oled.setCursor(74, 1);
-  oled.print("S");
+  oled.print("|");
   if ( bars > 7 )
   {
     oled.setCursor(80, 1);
@@ -657,15 +657,16 @@ void showStep()
 {
   if (bfoOn)
     return;
-  oled.setCursor(80, 2);
-  oled.print("        ");
+  oled.setCursor(74, 2);
+  oled.print("         ");
   if (currentMode == FM) 
     return;
-  oled.setCursor(80, 2);
+  oled.setCursor(74, 2);
   oled.invertOutput(cmdStep);
   oled.print("STEP:");
   oled.invertOutput(false);
   oled.print(tabStep[idxStep]);
+  oled.print("k");
 }
 
 /*
@@ -753,22 +754,23 @@ void showAttenuation()
 void showBFO()
 {
   oled.setCursor(0, 2);
-  oled.print("           ");
+  oled.print("          ");
   oled.setCursor(0, 2);
   oled.invertOutput(bfoOn);
   oled.print("BFO:");
   oled.invertOutput(false);
-  oled.print(" ");
+//  oled.print(" ");
   oled.print(currentBFO);
   oled.print("Hz ");
 
-  oled.setCursor(80, 2);
-  oled.print("        ");
-  oled.setCursor(80, 2);
+  oled.setCursor(74, 2);
+  oled.print("         ");
+  oled.setCursor(74, 2);
   oled.invertOutput(cmdStep);
   oled.print("STEP:");
   oled.invertOutput(false);
   oled.print(currentBFOStep);
+  oled.print("Hz");
 }
 
 char *stationName;
