@@ -87,6 +87,13 @@
   - Tweaked default band settings
 
   Darren VE3XLT, 23 May 2021
+
+  ========================
+
+  - Small visual tweak to S meter
+  - Added units to STEP display for both frequency and bfo
+
+  Darren VE3XLT, 26 May 2021
 */
 
 #include <SI4735.h>
