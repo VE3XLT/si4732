@@ -345,7 +345,7 @@ void setup()
   // Splash - Change it for your introduction text.
   oled.setCursor(0, 0);
   oled.invertOutput(true);
-  oled.print("ATS-20 VE3XLT-CA2PEY");
+  oled.print("ATS-20 VE3XLT");
   oled.invertOutput(false);
   oled.setCursor(8, 2);
   oled.print("SI473X Arduino Lib");
