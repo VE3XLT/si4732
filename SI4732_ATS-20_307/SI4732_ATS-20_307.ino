@@ -94,6 +94,14 @@
   - Added units to STEP display for both frequency and bfo
 
   Darren VE3XLT, 26 May 2021
+
+  ---------------------------
+
+  -slighty changes to bandtable, adding frecuencies and filling gaps
+  -added AVC function added by ricardo
+  thanks to Ricardo and Darren
+
+  Patricio CA2PEY
 */
 
 #include <SI4735.h>
@@ -118,14 +126,14 @@ const uint16_t cmd_0x15_size = sizeof cmd_0x15;         // Array of lines where 
 #define RESET_PIN 12
 
 // Enconder PINs - if the clockwise and counterclockwise directions are not correct for you, please, invert this settings.
-#define ENCODER_PIN_A 3
-#define ENCODER_PIN_B 2
+#define ENCODER_PIN_A 2
+#define ENCODER_PIN_B 3
 
 // Buttons controllers
 #define MODE_SWITCH 4      // Switch MODE (Am/LSB/USB)
 #define BANDWIDTH_BUTTON 5 // Used to select the banddwith.
 #define VOLUME_BUTTON 6    // Volume Up
-#define FREE_BUTTON1 7     // **** Use thi button to implement a new function
+#define AVC_BUTTON 7     // **** Use thi button to implement a new function
 #define BAND_BUTTON 8      // Next band
 #define SOFTMUTE_BUTTON 9     // **** Use thi button to implement a new function
 #define AGC_BUTTON 11      // Switch AGC ON/OF
@@ -166,6 +174,7 @@ bool cmdStep = false;     // if true, the encoder will control the step frequenc
 bool cmdBw = false;       // if true, the encoder will control the bandwidth
 bool cmdBand = false;     // if true, the encoder will control the band
 bool cmdSoftMute = false; // if true, the encoder will control the Soft Mute attenuation
+bool cmdAvc = false;      // if true, the encoder will control Automatic Volume Control
 
 long countRSSI = 0;
 
@@ -228,6 +237,7 @@ int8_t agcIdx = 0;
 uint8_t disableAgc = 0;
 uint8_t agcNdx = 0;
 int8_t smIdx = 8;
+int8_t avcIdx = 38;
 
 int tabStep[] = {1,    // 0
                  5,    // 1
@@ -261,33 +271,43 @@ typedef struct
    Turn your receiver on with the encoder push button pressed at first time to RESET the eeprom content.  
 */
 Band band[] = {
-//    {FM_BAND_TYPE, 6400, 8400, 7000, 3, 0}, // FM from 64 to 84 MHz
-    {FM_BAND_TYPE, 8400, 10800, 10570, 3, 0, "VHF"},
-//    {LW_BAND_TYPE, 100, 510, 300, 0, 4, "LW"},
-    {MW_BAND_TYPE, 520, 1720, 810, 3, 5, "MW"},
-//    {MW_BAND_TYPE, 531, 1701, 783, 2, 4},   // MW for Europe, Africa and Asia
-    {SW_BAND_TYPE, 1700, 2000, 1900, 0, 4, "160M"}, // 160 meters
-    {SW_BAND_TYPE, 2000, 2500, 2200, 1, 5, "SW120"}, // 120 meters SW
-    {SW_BAND_TYPE, 2500, 3500, 3330, 1, 5, "SW90"}, // 90 meters SW
-    {SW_BAND_TYPE, 3500, 4000, 3700, 0, 5, "80M"}, // 80 meters
-    {SW_BAND_TYPE, 4000, 5100, 4850, 1, 5, "SW60"}, //60 meter SW
-    {SW_BAND_TYPE, 5800, 6300, 5850, 1, 5, "SW49"}, //49 meter SW
-    {SW_BAND_TYPE, 5400, 6800, 6000, 0, 4, "HFair"}, // HF air band
-    {SW_BAND_TYPE, 6800, 7300, 7100, 0, 4, "40M"}, // 40 meters
-    {SW_BAND_TYPE, 7200, 7900, 7200, 1, 5, "SW41"}, // 41 meters    
-    {SW_BAND_TYPE, 9200, 10000, 9600, 1, 5, "SW31"}, //31 meter SW
-    {SW_BAND_TYPE, 10000, 11000, 10100, 0, 4, "30M"}, // 30 meters
-    {SW_BAND_TYPE, 11200, 12500, 11940, 1, 5, "SW25"}, //25 meter SW
-    {SW_BAND_TYPE, 13400, 13900, 13600, 1, 5, "SW22"}, //22 meter SW
-    {SW_BAND_TYPE, 14000, 14500, 14200, 0, 4, "20M"}, // 20 meters
-    {SW_BAND_TYPE, 15000, 15900, 15300, 1, 5, "SW19"}, //19 meter SW
-    {SW_BAND_TYPE, 17200, 17900, 17600, 1, 5, "SW16"}, //16 meter SW
-    {SW_BAND_TYPE, 18000, 18300, 18100, 0, 4, "17M"}, // 17 meters
-    {SW_BAND_TYPE, 21000, 21400, 21200, 0, 4, "15M"}, // 15 meters
-    {SW_BAND_TYPE, 21400, 21900, 21500, 1, 5, "SW13"}, // 13 meters SW
-    {SW_BAND_TYPE, 24890, 26200, 24940, 0, 4, "12M"}, // 12 meters
-    {SW_BAND_TYPE, 26200, 27900, 27500, 0, 4, "CB"}, // CB band (11 meters) 
-    {SW_BAND_TYPE, 28000, 30000, 28400, 0, 4, "10M"}  // 10 meters
+  // {FM_BAND_TYPE, 6400, 8400, 7000, 3, 0},     // FM from 64 to 84MHz; default 70MHz; default step frequency index is 3; default bandwidth index AUTO
+  {FM_BAND_TYPE, 8400, 10800, 10570, 3, 0, "VHF"},   // FM 84-108 MHZ; default 105.7; step 3; bw auto
+  {LW_BAND_TYPE, 100, 520, 300, 0, 4, "LW"},        // LW 
+  {MW_BAND_TYPE, 520, 1720, 810, 3, 4, "MW"},       // AM/MW from 520 to 1720kHz; default 810kHz; default step frequency index is 3 (10kHz); default bandwidth index is 4 (3kHz)
+  //{MW_BAND_TYPE, 531, 1700, 783, 2, 4},       // MW for Europe, Africa and Asia
+  {SW_BAND_TYPE, 1700, 2000, 1850, 0, 5, "160M"},     // 160 meters HAM
+  {SW_BAND_TYPE, 2000, 2500, 2250, 1, 4, "120SW"},     // 120 meters BC
+  {SW_BAND_TYPE, 2500, 3200, 3000, 0, 4},
+  {SW_BAND_TYPE, 3200, 3500, 3300, 1, 4, "90SW"},     // 90 meters BC
+  {SW_BAND_TYPE, 3500, 4000, 3700, 0, 5, "80M"},     // 80 meters HAM
+  {SW_BAND_TYPE, 4000, 5000, 4500, 1, 4, "60SW"},     // 60 meters  BC
+  {SW_BAND_TYPE, 5000, 5900, 5400, 0, 4, "60M"},     // 60 metres HAM
+  {SW_BAND_TYPE, 5900, 6200, 6000, 1, 4, "49SW"},     // 49 meters BC 
+  {SW_BAND_TYPE, 6200, 7000, 6800, 0, 4, "AIRHF"},     //HF airband, VOLMETS
+  {SW_BAND_TYPE, 7000, 7200, 7100, 0, 4, "40M"},     // 40 meters HAM
+  {SW_BAND_TYPE, 7200, 8000, 7400, 1, 4, "40SW"},     // 41 meters BC
+  {SW_BAND_TYPE, 8000, 9400, 8600, 1, 4},
+  {SW_BAND_TYPE, 9400, 10000, 9700, 1, 4, "31SW"},    // 31 meters BC
+  {SW_BAND_TYPE, 10000, 11500, 10100, 0, 4, "30M"},  // 30 meters HAM
+  {SW_BAND_TYPE, 11500, 12500, 11940, 1, 4, "25SW"},  // 25 meters BC
+  {SW_BAND_TYPE, 12500, 13500, 13000, 1, 4},
+  {SW_BAND_TYPE, 13500, 14000, 13750, 1, 4, "22SW"},  // 22 meters BC
+  {SW_BAND_TYPE, 14000, 14500, 14200, 0, 4, "20M"},  // 20 meters HAM
+  {SW_BAND_TYPE, 14500, 15000, 14750, 0, 4},
+  {SW_BAND_TYPE, 15000, 16000, 15300, 1, 4, "19SW"},  // 19 meters BC
+  {SW_BAND_TYPE, 16000, 17000, 16500, 1, 4},
+  {SW_BAND_TYPE, 17000, 18000, 17500, 1, 4, "16SW"},  // 16 meters BC
+  {SW_BAND_TYPE, 18000, 18300, 18100, 0, 4, "17M"},  // 17 meters HAM
+  {SW_BAND_TYPE, 18300, 19100, 18600, 1, 4, "15SW"},  // 15 meters BC
+  {SW_BAND_TYPE, 19100, 21000, 20000, 0, 4},  
+  {SW_BAND_TYPE, 21000, 21450, 21200, 0, 4, "15M"},  // 15 mters HAM
+  {SW_BAND_TYPE, 21450, 21900, 21500, 1, 4, "13SW"},  // 13 mters BC
+  {SW_BAND_TYPE, 21900, 24890, 23000, 1, 4},
+  {SW_BAND_TYPE, 24890, 25000, 24940, 0, 4, "12M"},  // 12 meters HAM
+  {SW_BAND_TYPE, 25000, 26200, 25800, 1, 4, "11SW"},  // 11 meters BC
+  {SW_BAND_TYPE, 26200, 28000, 27500, 0, 4, "CB"},  // CB band (11 meters)
+  {SW_BAND_TYPE, 28000, 30000, 28400, 0, 4, "10M"},   // 10 meters HAM
 };
 
 const int lastBand = (sizeof band / sizeof(Band)) - 1;
@@ -311,7 +331,7 @@ void setup()
   pinMode(BAND_BUTTON, INPUT_PULLUP);
   pinMode(SOFTMUTE_BUTTON, INPUT_PULLUP);
   pinMode(VOLUME_BUTTON, INPUT_PULLUP);
-  pinMode(FREE_BUTTON1, INPUT_PULLUP);
+  pinMode(AVC_BUTTON, INPUT_PULLUP);
   pinMode(ENCODER_BUTTON, INPUT_PULLUP);
   pinMode(AGC_BUTTON, INPUT_PULLUP);
   pinMode(STEP_BUTTON, INPUT_PULLUP);
@@ -325,12 +345,12 @@ void setup()
   // Splash - Change it for your introduction text.
   oled.setCursor(0, 0);
   oled.invertOutput(true);
-  oled.print("  ATS-20/307-VE3XLT  ");
+  oled.print("ATS-20 VE3XLT CA2PEY");
   oled.invertOutput(false);
   oled.setCursor(8, 2);
   oled.print("SI473X Arduino Lib");
   oled.setCursor(10, 3);
-  oled.print("V3.0.7b by PU2CLR");  
+  oled.print("V3.0.7g by PU2CLR");  
   delay(1000);
   // end Splash
 
@@ -355,6 +375,8 @@ void setup()
   si4735.getDeviceI2CAddress(RESET_PIN); // Looks for the I2C bus address and set it.  Returns 0 if error
 
   si4735.setup(RESET_PIN, MW_BAND_TYPE); //
+  si4735.setAvcAmMaxGain(48); // Sets the maximum gain for automatic volume control on AM/SSB mode (between 12 and 90dB)
+
   delay(500);
 
   // Checking the EEPROM content
@@ -660,6 +682,18 @@ void showVolume()
   oled.print(si4735.getCurrentVolume());
 }
 
+void showAvc() {              //shows AVC in screen, this function in use appears over VOL in screen
+  if ( currentMode != FM ) {  // and after some seconds returns to VOL, also when you release the button 
+    oled.setCursor(60,3);     // there is a little moment where VOL is on the screen, then returns to AVC,
+    oled.print("     ");      //  i dont know how fix this. only visual bug, the AVC works well
+    oled.setCursor(55,3);
+    oled.invertOutput(cmdAvc);
+    oled.print("AVC:");
+    oled.invertOutput(false);
+    oled.print(avcIdx);
+  }
+}                             
+
 void showStep()
 {
   if (bfoOn)
@@ -730,20 +764,24 @@ void showAttenuation()
   oled.setCursor(72, 0);
   oled.print("    ");
   oled.setCursor(72, 0);
-  if ( currentMode != FM ) {
-    if (cmdSoftMute) {
+  if ( currentMode != FM ) 
+  {
+    if (cmdSoftMute) 
+    {
       oled.invertOutput(cmdSoftMute);
       oled.print("SM");
       oled.invertOutput(false);
       oled.print(smIdx);
-    } else { // shows Softmute attenuation
+    } 
+    else  // shows Softmute attenuation
+    { 
       oled.invertOutput(cmdAgcAtt);
       if (agcIdx == 0)
       {
         oled.print("AGC");
         oled.invertOutput(false);
       }
-      else
+      else 
       {
         oled.print("At");
         oled.invertOutput(false);
@@ -751,7 +789,6 @@ void showAttenuation()
       }  
     }
   }
-
 }
 
 /*
@@ -1035,6 +1072,24 @@ void doAttenuation(int8_t v)
 }
 
 /**
+   Automatic Volume Control
+*/
+void doAvc(int8_t v)
+{
+  if ( currentMode != FM ) {
+    avcIdx = (v == 1) ? avcIdx + 2 : avcIdx - 2;
+    if (avcIdx > 90)
+      avcIdx = 12;
+    else if (avcIdx < 12)
+      avcIdx = 90;
+
+    si4735.setAvcAmMaxGain(avcIdx);
+    showAvc();
+    delay(MIN_ELAPSED_TIME); // waits a little more for releasing the button.
+  }
+}
+
+/**
  * Switches the bandwidth based on encoder rotation
  */
 void doBandwidth(uint8_t v)
@@ -1095,6 +1150,7 @@ void disableCommand(bool *b, bool value, void (*showFunction)())
   cmdBw = false;
   cmdBand = false;
   cmdSoftMute = false;
+  cmdAvc = false;
   showVolume();
   showStep();
   showAttenuation();
@@ -1123,6 +1179,8 @@ void loop()
       doStep(encoderCount);
     else if (cmdBw)
       doBandwidth(encoderCount);
+    else if (cmdAvc)
+      doAvc(encoderCount);  
     else if (cmdBand)
     {
       if (encoderCount == 1)
@@ -1189,10 +1247,13 @@ void loop()
       disableCommand(&cmdVolume, cmdVolume, showVolume);
       delay(MIN_ELAPSED_TIME); // waits a little more for releasing the button.
     }
-    else if (digitalRead(FREE_BUTTON1) == LOW)
+    else if (digitalRead(AVC_BUTTON) == LOW)
     {
-      // available to add other function
-      showStatus();
+      if (currentMode != FM) {
+        cmdAvc = !cmdAvc;
+        disableCommand(&cmdAvc, cmdAvc, showAvc);
+      }
+      delay(MIN_ELAPSED_TIME); // waits a little more for releasing the button.
     }
     else if (digitalRead(ENCODER_BUTTON) == LOW)
     {
